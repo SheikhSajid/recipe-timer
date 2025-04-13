@@ -45,7 +45,7 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
         const reader = new FileReader();
         reader.onloadend = () => {
           if (typeof reader.result === 'string') {
-            setImages(prev => [...prev, reader.result]);
+            setImages(prev => [...prev, reader.result as string]);
           }
         };
         reader.readAsDataURL(file);
