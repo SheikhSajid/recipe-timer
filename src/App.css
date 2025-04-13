@@ -201,6 +201,16 @@ body {
   margin-bottom: 1rem;
 }
 
+.timer.completed {
+  animation: flash 1s infinite;
+}
+
+@keyframes flash {
+  0% { background-color: var(--primary-color); }
+  50% { background-color: #ff4444; }
+  100% { background-color: var(--primary-color); }
+}
+
 .timer-controls {
   display: flex;
   gap: 0.5rem;

@@ -9,9 +9,11 @@ interface TimerProps {
 
 export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
   const [remainingTime, setRemainingTime] = useState(timer.remainingTime);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
     setRemainingTime(timer.remainingTime);
+    setIsCompleted(timer.remainingTime === 0);
   }, [timer.remainingTime]);
 
   useEffect(() => {
@@ -22,6 +24,7 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
         () => {
           const updatedTimer = timerService.stopTimer(timer);
           onTimerUpdate(updatedTimer);
+          setIsCompleted(true);
         }
       );
       onTimerUpdate(newTimer);
@@ -29,12 +32,14 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
   }, [timer.isRunning, timer.isPaused]);
 
   const handleStart = () => {
+    setIsCompleted(false);
     const newTimer = timerService.startTimer(
       timer,
       (time) => setRemainingTime(time),
       () => {
         const updatedTimer = timerService.stopTimer(timer);
         onTimerUpdate(updatedTimer);
+        setIsCompleted(true);
       }
     );
     onTimerUpdate(newTimer);
@@ -46,18 +51,27 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
   };
 
   const handleResume = () => {
-    const newTimer = timerService.resumeTimer(timer);
+    const newTimer = timerService.resumeTimer(
+      timer,
+      (time) => setRemainingTime(time),
+      () => {
+        const updatedTimer = timerService.stopTimer(timer);
+        onTimerUpdate(updatedTimer);
+        setIsCompleted(true);
+      }
+    );
     onTimerUpdate(newTimer);
   };
 
   const handleStop = () => {
     const newTimer = timerService.stopTimer(timer);
     setRemainingTime(newTimer.remainingTime);
+    setIsCompleted(false);
     onTimerUpdate(newTimer);
   };
 
   return (
-    <div className="timer">
+    <div className={`timer ${isCompleted ? 'completed' : ''}`}>
       <div className="timer-display">{timerService.formatTime(remainingTime)}</div>
       <div className="timer-controls">
         {!timer.isRunning ? (
