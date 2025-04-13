@@ -9,6 +9,7 @@ function App() {
   const [recipes, setRecipes] = useState<RecipeType[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeType | null>(null);
   const [showNewRecipeForm, setShowNewRecipeForm] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const loadedRecipes = storageService.getAllRecipes();
@@ -33,21 +34,35 @@ function App() {
     setShowNewRecipeForm(false);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Recipe Timer</h1>
+        <div className="header-content">
+          <button 
+            className="toggle-sidebar-button"
+            onClick={toggleSidebar}
+          >
+            {isSidebarCollapsed ? '☰' : '✕'}
+          </button>
+          <h1>Recipe Timer</h1>
+        </div>
       </header>
       <main className="app-content">
-        <div className="recipe-list">
+        <div className={`recipe-list ${isSidebarCollapsed ? 'collapsed' : ''}`}>
           <div className="recipe-list-header">
             <h2>My Recipes</h2>
-            <button 
-              className="new-recipe-button"
-              onClick={() => setShowNewRecipeForm(true)}
-            >
-              New Recipe
-            </button>
+            <div className="header-controls">
+              <button 
+                className="new-recipe-button"
+                onClick={() => setShowNewRecipeForm(true)}
+              >
+                New Recipe
+              </button>
+            </div>
           </div>
           <div className="recipes-grid">
             {recipes.map(recipe => (
