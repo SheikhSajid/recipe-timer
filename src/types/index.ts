@@ -12,7 +12,7 @@ export interface Step {
   title: string;
   instructions: string[];
   timer?: Timer;
-  images: string[];
+  images: string[]; // Base64 encoded image data
   order: number;
 }
 

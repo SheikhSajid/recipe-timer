@@ -13,8 +13,7 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
   const [instructions, setInstructions] = useState(step.instructions);
   const [minutes, setMinutes] = useState(Math.floor((step.timer?.duration || 0) / 60));
   const [seconds, setSeconds] = useState((step.timer?.duration || 0) % 60);
-  const [images, setImages] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>(step.images);
+  const [images, setImages] = useState<string[]>(step.images);
 
   const handleAddInstruction = () => {
     setInstructions([...instructions, '']);
@@ -35,31 +34,22 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newImages = Array.from(files);
-      setImages([...images, ...newImages]);
-      
-      // Create preview URLs
-      const newPreviewUrls = newImages.map(file => URL.createObjectURL(file));
-      setPreviewUrls([...previewUrls, ...newPreviewUrls]);
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === 'string') {
+            setImages(prev => [...prev, reader.result]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    // If it's a new image (from file upload), clean up the URL
-    if (index >= step.images.length) {
-      URL.revokeObjectURL(previewUrls[index]);
-    }
-
-    const newPreviewUrls = [...previewUrls];
-    newPreviewUrls.splice(index, 1);
-    setPreviewUrls(newPreviewUrls);
-
-    // If it's a new image, also remove it from the files array
-    if (index >= step.images.length) {
-      const newImages = [...images];
-      newImages.splice(index - step.images.length, 1);
-      setImages(newImages);
-    }
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
   };
 
   const handleSave = () => {
@@ -68,7 +58,7 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
       ...step,
       title,
       instructions: instructions.filter(i => i.trim() !== ''),
-      images: previewUrls,
+      images,
       timer: totalSeconds > 0 ? timerService.createTimer(totalSeconds) : undefined
     };
     onSave(updatedStep);
@@ -146,9 +136,9 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
           className="image-upload"
         />
         <div className="image-previews">
-          {previewUrls.map((url, index) => (
+          {images.map((imageData, index) => (
             <div key={index} className="image-preview">
-              <img src={url} alt={`Preview ${index + 1}`} />
+              <img src={imageData} alt={`Preview ${index + 1}`} />
               <button
                 onClick={() => handleRemoveImage(index)}
                 className="remove-button"

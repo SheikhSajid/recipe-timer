@@ -49,8 +49,8 @@ export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
         </ol>
         {step.images.length > 0 && (
           <div className="step-images">
-            {step.images.map((image, index) => (
-              <img key={index} src={image} alt={`Step ${step.order} - Image ${index + 1}`} />
+            {step.images.map((imageData, index) => (
+              <img key={index} src={imageData} alt={`Step ${step.order} - Image ${index + 1}`} />
             ))}
           </div>
         )}

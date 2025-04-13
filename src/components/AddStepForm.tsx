@@ -20,8 +20,7 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
   const [instructions, setInstructions] = useState(['']);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const [images, setImages] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
 
   const handleAddInstruction = () => {
     setInstructions([...instructions, '']);
@@ -42,24 +41,22 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newImages = Array.from(files);
-      setImages([...images, ...newImages]);
-      
-      // Create preview URLs
-      const newPreviewUrls = newImages.map(file => URL.createObjectURL(file));
-      setPreviewUrls([...previewUrls, ...newPreviewUrls]);
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === 'string') {
+            setImages(prev => [...prev, reader.result]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    URL.revokeObjectURL(previewUrls[index]);
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
-
-    const newPreviewUrls = [...previewUrls];
-    newPreviewUrls.splice(index, 1);
-    setPreviewUrls(newPreviewUrls);
   };
 
   const handleSubmit = () => {
@@ -72,7 +69,7 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
       title,
       instructions: instructions.filter(i => i.trim() !== ''),
       order: currentStepCount + 1,
-      images: previewUrls,
+      images,
       timer: totalSeconds > 0 ? timerService.createTimer(totalSeconds) : undefined
     };
 
@@ -152,9 +149,9 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
           className="image-upload"
         />
         <div className="image-previews">
-          {previewUrls.map((url, index) => (
+          {images.map((imageData, index) => (
             <div key={index} className="image-preview">
-              <img src={url} alt={`Preview ${index + 1}`} />
+              <img src={imageData} alt={`Preview ${index + 1}`} />
               <button
                 onClick={() => handleRemoveImage(index)}
                 className="remove-button"
