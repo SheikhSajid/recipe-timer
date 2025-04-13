@@ -19,12 +19,15 @@ body {
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   color: var(--text-color);
   background-color: var(--background-color);
+  height: 100vh;
+  overflow: hidden;
 }
 
 .app {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  width: 100vw;
 }
 
 .app-header {
@@ -33,29 +36,40 @@ body {
   padding: 1rem;
   text-align: center;
   box-shadow: var(--box-shadow);
+  flex-shrink: 0;
 }
 
 .app-content {
   flex: 1;
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 2rem;
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  display: flex;
+  overflow: hidden;
 }
 
 .recipe-list {
+  width: 300px;
   background-color: var(--card-background);
   padding: 1rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.recipe-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: sticky;
+  top: 0;
+  background-color: var(--card-background);
+  padding-bottom: 1rem;
+  z-index: 1;
 }
 
 .recipes-grid {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
-  margin-top: 1rem;
 }
 
 .recipe-card {
@@ -80,10 +94,10 @@ body {
 }
 
 .recipe-detail {
+  flex: 1;
   background-color: var(--card-background);
   padding: 2rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  overflow-y: auto;
 }
 
 .recipe-header {
