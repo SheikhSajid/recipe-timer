@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Timer as TimerType } from '../types';
 import { timerService } from '../services/timer';
 
@@ -11,6 +11,12 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
   const [remainingTime, setRemainingTime] = useState(timer.remainingTime);
   const [isCompleted, setIsCompleted] = useState(false);
 
+  const handleTimerComplete = useCallback(() => {
+    const updatedTimer = timerService.stopTimer(timer);
+    onTimerUpdate(updatedTimer);
+    setIsCompleted(true);
+  }, [timer, onTimerUpdate]);
+
   useEffect(() => {
     setRemainingTime(timer.remainingTime);
     setIsCompleted(timer.remainingTime === 0);
@@ -21,26 +27,18 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
       const newTimer = timerService.startTimer(
         timer,
         (time) => setRemainingTime(time),
-        () => {
-          const updatedTimer = timerService.stopTimer(timer);
-          onTimerUpdate(updatedTimer);
-          setIsCompleted(true);
-        }
+        handleTimerComplete
       );
       onTimerUpdate(newTimer);
     }
-  }, [timer.isRunning, timer.isPaused]);
+  }, [timer.isRunning, timer.isPaused, timer, onTimerUpdate, handleTimerComplete]);
 
   const handleStart = () => {
     setIsCompleted(false);
     const newTimer = timerService.startTimer(
       timer,
       (time) => setRemainingTime(time),
-      () => {
-        const updatedTimer = timerService.stopTimer(timer);
-        onTimerUpdate(updatedTimer);
-        setIsCompleted(true);
-      }
+      handleTimerComplete
     );
     onTimerUpdate(newTimer);
   };
@@ -54,11 +52,7 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
     const newTimer = timerService.resumeTimer(
       timer,
       (time) => setRemainingTime(time),
-      () => {
-        const updatedTimer = timerService.stopTimer(timer);
-        onTimerUpdate(updatedTimer);
-        setIsCompleted(true);
-      }
+      handleTimerComplete
     );
     onTimerUpdate(newTimer);
   };

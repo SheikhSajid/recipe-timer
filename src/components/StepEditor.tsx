@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Step, Timer } from '../types';
+import { Step } from '../types';
 import { timerService } from '../services/timer';
 
 interface StepEditorProps {

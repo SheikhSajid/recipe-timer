@@ -93,7 +93,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onRecipeAdded }) => {
 
       <div className="steps-section">
         <h3>Steps</h3>
-        {steps.map((step, index) => (
+        {steps.map(step => (
           <div key={step.id} className="step-preview">
             <h4>{step.title}</h4>
             <p>{step.instructions.join(', ')}</p>
