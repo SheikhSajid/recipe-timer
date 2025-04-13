@@ -386,3 +386,17 @@ body {
 .remove-button:hover {
   background-color: #ff5252;
 }
+
+.step-instructions {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.step-instructions li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.step-instructions li:last-child {
+  margin-bottom: 0;
+}

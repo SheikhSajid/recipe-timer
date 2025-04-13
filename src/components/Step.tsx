@@ -42,11 +42,11 @@ export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
         </button>
       </div>
       <div className="step-content">
-        <div className="step-instructions">
+        <ol className="step-instructions">
           {step.instructions.map((instruction, index) => (
-            <p key={index}>{instruction}</p>
+            <li key={index}>{instruction}</li>
           ))}
-        </div>
+        </ol>
         {step.images.length > 0 && (
           <div className="step-images">
             {step.images.map((image, index) => (
