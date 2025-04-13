@@ -18,7 +18,8 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
 }) => {
   const [title, setTitle] = useState('');
   const [instructions, setInstructions] = useState(['']);
-  const [timerDuration, setTimerDuration] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
@@ -51,12 +52,11 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
   };
 
   const handleRemoveImage = (index: number) => {
+    URL.revokeObjectURL(previewUrls[index]);
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
 
-    // Clean up the preview URL
-    URL.revokeObjectURL(previewUrls[index]);
     const newPreviewUrls = [...previewUrls];
     newPreviewUrls.splice(index, 1);
     setPreviewUrls(newPreviewUrls);
@@ -65,6 +65,7 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
   const handleSubmit = () => {
     if (!title) return;
 
+    const totalSeconds = timerService.parseTime(minutes, seconds);
     const newStep: Step = {
       id: crypto.randomUUID(),
       recipeId,
@@ -72,7 +73,7 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
       instructions: instructions.filter(i => i.trim() !== ''),
       order: currentStepCount + 1,
       images: previewUrls,
-      timer: timerDuration > 0 ? timerService.createTimer(timerDuration) : undefined
+      timer: totalSeconds > 0 ? timerService.createTimer(totalSeconds) : undefined
     };
 
     onAddStep(newStep);
@@ -115,13 +116,30 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
       </div>
 
       <div className="form-group">
-        <label>Timer Duration (seconds)</label>
-        <input
-          type="number"
-          value={timerDuration}
-          onChange={(e) => setTimerDuration(parseInt(e.target.value) || 0)}
-          placeholder="Timer duration in seconds"
-        />
+        <label>Timer Duration</label>
+        <div className="timer-inputs">
+          <div className="timer-input">
+            <input
+              type="number"
+              value={minutes}
+              onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
+              min="0"
+              placeholder="Minutes"
+            />
+            <span>minutes</span>
+          </div>
+          <div className="timer-input">
+            <input
+              type="number"
+              value={seconds}
+              onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+              min="0"
+              max="59"
+              placeholder="Seconds"
+            />
+            <span>seconds</span>
+          </div>
+        </div>
       </div>
 
       <div className="form-group">

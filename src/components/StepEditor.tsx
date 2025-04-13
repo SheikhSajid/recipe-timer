@@ -11,7 +11,8 @@ interface StepEditorProps {
 export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }) => {
   const [title, setTitle] = useState(step.title);
   const [instructions, setInstructions] = useState(step.instructions);
-  const [timerDuration, setTimerDuration] = useState(step.timer?.duration || 0);
+  const [minutes, setMinutes] = useState(Math.floor((step.timer?.duration || 0) / 60));
+  const [seconds, setSeconds] = useState((step.timer?.duration || 0) % 60);
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>(step.images);
 
@@ -62,12 +63,13 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
   };
 
   const handleSave = () => {
+    const totalSeconds = timerService.parseTime(minutes, seconds);
     const updatedStep: Step = {
       ...step,
       title,
       instructions: instructions.filter(i => i.trim() !== ''),
       images: previewUrls,
-      timer: timerDuration > 0 ? timerService.createTimer(timerDuration) : undefined
+      timer: totalSeconds > 0 ? timerService.createTimer(totalSeconds) : undefined
     };
     onSave(updatedStep);
   };
@@ -108,13 +110,30 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
       </div>
 
       <div className="form-group">
-        <label>Timer Duration (seconds)</label>
-        <input
-          type="number"
-          value={timerDuration}
-          onChange={(e) => setTimerDuration(parseInt(e.target.value) || 0)}
-          placeholder="Timer duration in seconds"
-        />
+        <label>Timer Duration</label>
+        <div className="timer-inputs">
+          <div className="timer-input">
+            <input
+              type="number"
+              value={minutes}
+              onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
+              min="0"
+              placeholder="Minutes"
+            />
+            <span>minutes</span>
+          </div>
+          <div className="timer-input">
+            <input
+              type="number"
+              value={seconds}
+              onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+              min="0"
+              max="59"
+              placeholder="Seconds"
+            />
+            <span>seconds</span>
+          </div>
+        </div>
       </div>
 
       <div className="form-group">

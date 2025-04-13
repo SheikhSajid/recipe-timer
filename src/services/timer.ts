@@ -50,11 +50,31 @@ export const timerService = {
     };
   },
 
-  resumeTimer: (timer: Timer): Timer => ({
-    ...timer,
-    isPaused: false,
-    isRunning: true
-  }),
+  resumeTimer: (timer: Timer, onTick: (remainingTime: number) => void, onComplete: () => void): Timer => {
+    const newTimer = { ...timer, isRunning: true, isPaused: false };
+    let remainingTime = timer.remainingTime;
+
+    // Clear any existing interval for this timer
+    if (activeIntervals[timer.id]) {
+      clearInterval(activeIntervals[timer.id]);
+    }
+
+    const tick = () => {
+      if (remainingTime > 0) {
+        remainingTime--;
+        onTick(remainingTime);
+      } else {
+        clearInterval(activeIntervals[timer.id]);
+        delete activeIntervals[timer.id];
+        TIMER_SOUND.play();
+        onComplete();
+      }
+    };
+
+    activeIntervals[timer.id] = setInterval(tick, 1000) as unknown as number;
+
+    return newTimer;
+  },
 
   stopTimer: (timer: Timer): Timer => {
     if (activeIntervals[timer.id]) {
@@ -85,5 +105,16 @@ export const timerService = {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  },
+
+  parseTime: (minutes: number, seconds: number): number => {
+    return minutes * 60 + seconds;
+  },
+
+  getMinutesAndSeconds: (totalSeconds: number): { minutes: number; seconds: number } => {
+    return {
+      minutes: Math.floor(totalSeconds / 60),
+      seconds: totalSeconds % 60
+    };
   }
 }; 
