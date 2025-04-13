@@ -13,7 +13,7 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
   const [instructions, setInstructions] = useState(step.instructions);
   const [timerDuration, setTimerDuration] = useState(step.timer?.duration || 0);
   const [images, setImages] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>(step.images);
 
   const handleAddInstruction = () => {
     setInstructions([...instructions, '']);
@@ -44,15 +44,21 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
   };
 
   const handleRemoveImage = (index: number) => {
-    const newImages = [...images];
-    newImages.splice(index, 1);
-    setImages(newImages);
+    // If it's a new image (from file upload), clean up the URL
+    if (index >= step.images.length) {
+      URL.revokeObjectURL(previewUrls[index]);
+    }
 
-    // Clean up the preview URL
-    URL.revokeObjectURL(previewUrls[index]);
     const newPreviewUrls = [...previewUrls];
     newPreviewUrls.splice(index, 1);
     setPreviewUrls(newPreviewUrls);
+
+    // If it's a new image, also remove it from the files array
+    if (index >= step.images.length) {
+      const newImages = [...images];
+      newImages.splice(index - step.images.length, 1);
+      setImages(newImages);
+    }
   };
 
   const handleSave = () => {
@@ -60,7 +66,7 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
       ...step,
       title,
       instructions: instructions.filter(i => i.trim() !== ''),
-      images: previewUrls, // Store the preview URLs as image sources
+      images: previewUrls,
       timer: timerDuration > 0 ? timerService.createTimer(timerDuration) : undefined
     };
     onSave(updatedStep);
