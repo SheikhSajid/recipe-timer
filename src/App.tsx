@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Recipe as RecipeType } from './types';
 import { Recipe as RecipeComponent } from './components/Recipe';
+import RecipeForm from './components/RecipeForm';
 import { storageService } from './services/storage';
 import './App.css';
 
 function App() {
   const [recipes, setRecipes] = useState<RecipeType[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeType | null>(null);
+  const [showNewRecipeForm, setShowNewRecipeForm] = useState(false);
 
   useEffect(() => {
     const loadedRecipes = storageService.getAllRecipes();
@@ -25,6 +27,12 @@ function App() {
     }
   };
 
+  const handleRecipeAdded = (newRecipe: RecipeType) => {
+    setRecipes(prevRecipes => [...prevRecipes, newRecipe]);
+    setSelectedRecipe(newRecipe);
+    setShowNewRecipeForm(false);
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -32,13 +40,24 @@ function App() {
       </header>
       <main className="app-content">
         <div className="recipe-list">
-          <h2>My Recipes</h2>
+          <div className="recipe-list-header">
+            <h2>My Recipes</h2>
+            <button 
+              className="new-recipe-button"
+              onClick={() => setShowNewRecipeForm(true)}
+            >
+              New Recipe
+            </button>
+          </div>
           <div className="recipes-grid">
             {recipes.map(recipe => (
               <div
                 key={recipe.id}
                 className="recipe-card"
-                onClick={() => setSelectedRecipe(recipe)}
+                onClick={() => {
+                  setSelectedRecipe(recipe);
+                  setShowNewRecipeForm(false);
+                }}
               >
                 {recipe.coverImage && (
                   <img src={recipe.coverImage} alt={recipe.title} />
@@ -50,7 +69,9 @@ function App() {
           </div>
         </div>
         <div className="recipe-detail">
-          {selectedRecipe ? (
+          {showNewRecipeForm ? (
+            <RecipeForm onRecipeAdded={handleRecipeAdded} />
+          ) : selectedRecipe ? (
             <RecipeComponent
               recipe={selectedRecipe}
               onRecipeUpdate={handleRecipeUpdate}
