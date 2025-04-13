@@ -7,11 +7,13 @@ import './Recipe.css';
 
 interface RecipeProps {
   recipe: RecipeType;
-  onRecipeUpdate: (updatedRecipe: RecipeType) => void;
+  onRecipeUpdate: (recipe: RecipeType) => void;
 }
 
 export const Recipe: React.FC<RecipeProps> = ({ recipe, onRecipeUpdate }) => {
   const [showAddStepForm, setShowAddStepForm] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(recipe.title);
 
   const handleStepUpdate = (updatedStep: Step) => {
     const updatedSteps = recipe.steps.map(step =>
@@ -30,13 +32,50 @@ export const Recipe: React.FC<RecipeProps> = ({ recipe, onRecipeUpdate }) => {
     setShowAddStepForm(false);
   };
 
+  const handleTitleEdit = () => {
+    setIsEditingTitle(true);
+  };
+
+  const handleTitleSave = () => {
+    if (editedTitle.trim()) {
+      const updatedRecipe = { ...recipe, title: editedTitle.trim() };
+      storageService.updateRecipe(updatedRecipe);
+      onRecipeUpdate(updatedRecipe);
+      setIsEditingTitle(false);
+    }
+  };
+
+  const handleTitleCancel = () => {
+    setEditedTitle(recipe.title);
+    setIsEditingTitle(false);
+  };
+
   return (
     <div className="recipe">
       <div className="recipe-header">
         {recipe.coverImage && (
           <img src={recipe.coverImage} alt={recipe.title} className="recipe-cover" />
         )}
-        <h2>{recipe.title}</h2>
+        {isEditingTitle ? (
+          <div className="title-edit">
+            <input
+              type="text"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+              className="title-input"
+              autoFocus
+            />
+            <div className="title-edit-buttons">
+              <button onClick={handleTitleSave} className="save-button">Save</button>
+              <button onClick={handleTitleCancel} className="cancel-button">Cancel</button>
+            </div>
+          </div>
+        ) : (
+          <div className="title-display">
+            <h2>{recipe.title}</h2>
+            <button onClick={handleTitleEdit} className="edit-button">Edit Title</button>
+          </div>
+        )}
         <p className="recipe-description">{recipe.description}</p>
       </div>
       <div className="recipe-steps">
