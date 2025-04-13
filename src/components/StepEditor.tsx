@@ -12,7 +12,8 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
   const [title, setTitle] = useState(step.title);
   const [instructions, setInstructions] = useState(step.instructions);
   const [timerDuration, setTimerDuration] = useState(step.timer?.duration || 0);
-  const [images, setImages] = useState(step.images);
+  const [images, setImages] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const handleAddInstruction = () => {
     setInstructions([...instructions, '']);
@@ -30,20 +31,28 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
     setInstructions(newInstructions);
   };
 
-  const handleAddImage = () => {
-    setImages([...images, '']);
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newImages = Array.from(files);
+      setImages([...images, ...newImages]);
+      
+      // Create preview URLs
+      const newPreviewUrls = newImages.map(file => URL.createObjectURL(file));
+      setPreviewUrls([...previewUrls, ...newPreviewUrls]);
+    }
   };
 
   const handleRemoveImage = (index: number) => {
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
-  };
 
-  const handleUpdateImage = (index: number, value: string) => {
-    const newImages = [...images];
-    newImages[index] = value;
-    setImages(newImages);
+    // Clean up the preview URL
+    URL.revokeObjectURL(previewUrls[index]);
+    const newPreviewUrls = [...previewUrls];
+    newPreviewUrls.splice(index, 1);
+    setPreviewUrls(newPreviewUrls);
   };
 
   const handleSave = () => {
@@ -51,7 +60,7 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
       ...step,
       title,
       instructions: instructions.filter(i => i.trim() !== ''),
-      images: images.filter(i => i.trim() !== ''),
+      images: previewUrls, // Store the preview URLs as image sources
       timer: timerDuration > 0 ? timerService.createTimer(timerDuration) : undefined
     };
     onSave(updatedStep);
@@ -103,31 +112,32 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
       </div>
 
       <div className="form-group">
-        <label>Image URLs</label>
-        {images.map((image, index) => (
-          <div key={index} className="image-input">
-            <input
-              type="text"
-              value={image}
-              onChange={(e) => handleUpdateImage(index, e.target.value)}
-              placeholder="Image URL"
-            />
-            <button
-              onClick={() => handleRemoveImage(index)}
-              className="remove-button"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button onClick={handleAddImage} className="add-button">
-          Add Image
-        </button>
+        <label>Images</label>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleImageUpload}
+          className="image-upload"
+        />
+        <div className="image-previews">
+          {previewUrls.map((url, index) => (
+            <div key={index} className="image-preview">
+              <img src={url} alt={`Preview ${index + 1}`} />
+              <button
+                onClick={() => handleRemoveImage(index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="editor-controls">
+      <div className="form-actions">
         <button onClick={handleSave} className="save-button">
-          Save Changes
+          Save
         </button>
         <button onClick={onCancel} className="cancel-button">
           Cancel

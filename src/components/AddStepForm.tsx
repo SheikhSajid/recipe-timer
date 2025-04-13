@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Step } from '../types';
 import { timerService } from '../services/timer';
+import './AddStepForm.css';
 
 interface AddStepFormProps {
   recipeId: string;
@@ -18,7 +19,8 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
   const [title, setTitle] = useState('');
   const [instructions, setInstructions] = useState(['']);
   const [timerDuration, setTimerDuration] = useState(0);
-  const [images, setImages] = useState(['']);
+  const [images, setImages] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const handleAddInstruction = () => {
     setInstructions([...instructions, '']);
@@ -36,20 +38,28 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
     setInstructions(newInstructions);
   };
 
-  const handleAddImage = () => {
-    setImages([...images, '']);
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newImages = Array.from(files);
+      setImages([...images, ...newImages]);
+      
+      // Create preview URLs
+      const newPreviewUrls = newImages.map(file => URL.createObjectURL(file));
+      setPreviewUrls([...previewUrls, ...newPreviewUrls]);
+    }
   };
 
   const handleRemoveImage = (index: number) => {
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
-  };
 
-  const handleUpdateImage = (index: number, value: string) => {
-    const newImages = [...images];
-    newImages[index] = value;
-    setImages(newImages);
+    // Clean up the preview URL
+    URL.revokeObjectURL(previewUrls[index]);
+    const newPreviewUrls = [...previewUrls];
+    newPreviewUrls.splice(index, 1);
+    setPreviewUrls(newPreviewUrls);
   };
 
   const handleSubmit = () => {
@@ -61,7 +71,7 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
       title,
       instructions: instructions.filter(i => i.trim() !== ''),
       order: currentStepCount + 1,
-      images: images.filter(i => i.trim() !== ''),
+      images: previewUrls,
       timer: timerDuration > 0 ? timerService.createTimer(timerDuration) : undefined
     };
 
@@ -115,29 +125,30 @@ export const AddStepForm: React.FC<AddStepFormProps> = ({
       </div>
 
       <div className="form-group">
-        <label>Image URLs</label>
-        {images.map((image, index) => (
-          <div key={index} className="image-input">
-            <input
-              type="text"
-              value={image}
-              onChange={(e) => handleUpdateImage(index, e.target.value)}
-              placeholder="Image URL"
-            />
-            <button
-              onClick={() => handleRemoveImage(index)}
-              className="remove-button"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button onClick={handleAddImage} className="add-button">
-          Add Image
-        </button>
+        <label>Images</label>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleImageUpload}
+          className="image-upload"
+        />
+        <div className="image-previews">
+          {previewUrls.map((url, index) => (
+            <div key={index} className="image-preview">
+              <img src={url} alt={`Preview ${index + 1}`} />
+              <button
+                onClick={() => handleRemoveImage(index)}
+                className="remove-button"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="form-controls">
+      <div className="form-actions">
         <button onClick={handleSubmit} className="submit-button">
           Add Step
         </button>

@@ -177,15 +177,13 @@ body {
 }
 
 .step-images {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  justify-content: center;
   gap: 1rem;
 }
 
 .step-images img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+  width: 384px;
   border-radius: var(--border-radius);
 }
 
