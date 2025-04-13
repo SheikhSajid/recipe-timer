@@ -20,7 +20,7 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
   useEffect(() => {
     setRemainingTime(timer.remainingTime);
     setIsCompleted(timer.remainingTime === 0);
-  }, [timer.remainingTime]);
+  }, [timer.id]);
 
   useEffect(() => {
     if (timer.isRunning && !timer.isPaused) {
@@ -29,9 +29,13 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
         (time) => setRemainingTime(time),
         handleTimerComplete
       );
-      onTimerUpdate(newTimer);
+      if (newTimer.isRunning !== timer.isRunning || 
+          newTimer.isPaused !== timer.isPaused || 
+          newTimer.remainingTime !== timer.remainingTime) {
+        onTimerUpdate(newTimer);
+      }
     }
-  }, [timer.isRunning, timer.isPaused, timer, onTimerUpdate, handleTimerComplete]);
+  }, [timer.isRunning, timer.isPaused, timer.id, onTimerUpdate, handleTimerComplete]);
 
   const handleStart = () => {
     setIsCompleted(false);
