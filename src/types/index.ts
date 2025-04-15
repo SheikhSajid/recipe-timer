@@ -11,7 +11,7 @@ export interface Step {
   recipeId: string;
   title: string;
   instructions: string[];
-  timer?: Timer;
+  timers: Timer[];
   images: string[]; // Base64 encoded image data
   order: number;
 }
