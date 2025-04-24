@@ -11,8 +11,11 @@ interface StepProps {
 export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleTimerUpdate = (timer: Timer) => {
-    const updatedStep = { ...step, timer };
+  const handleTimerUpdate = (updatedTimer: Timer) => {
+    const updatedTimers = step.timers.map(timer =>
+      timer.id === updatedTimer.id ? updatedTimer : timer
+    );
+    const updatedStep = { ...step, timers: updatedTimers };
     onStepUpdate(updatedStep);
   };
 
@@ -54,12 +57,16 @@ export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
             ))}
           </div>
         )}
-        {step.timer && (
-          <div className="step-timer">
-            <TimerComponent timer={step.timer} onTimerUpdate={handleTimerUpdate} />
+        {step.timers && step.timers.length > 0 && (
+          <div className="step-timers">
+            {step.timers.map((timer) => (
+              <div key={timer.id} className="step-timer">
+                <TimerComponent timer={timer} onTimerUpdate={handleTimerUpdate} />
+              </div>
+            ))}
           </div>
         )}
       </div>
     </div>
   );
-}; 
+};

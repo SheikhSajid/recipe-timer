@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Step } from '../types';
+import { Step, Timer } from '../types';
 import { timerService } from '../services/timer';
 
 interface StepEditorProps {
@@ -11,9 +11,15 @@ interface StepEditorProps {
 export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }) => {
   const [title, setTitle] = useState(step.title);
   const [instructions, setInstructions] = useState(step.instructions);
-  const [minutes, setMinutes] = useState(Math.floor((step.timer?.duration || 0) / 60));
-  const [seconds, setSeconds] = useState((step.timer?.duration || 0) % 60);
-  const [images, setImages] = useState<string[]>(step.images);
+  const [timersInput, setTimersInput] = useState<{ minutes: number; seconds: number }[]>(() => {
+    const initialTimers = (step.timers || []).map(timer => ({
+      minutes: Math.floor(timer.duration / 60),
+      seconds: timer.duration % 60
+    }));
+    return initialTimers.length > 0 ? initialTimers : [{ minutes: 0, seconds: 0 }];
+  });
+
+  const [images, setImages] = useState<string[]>(step.images || []);
 
   const handleAddInstruction = () => {
     setInstructions([...instructions, '']);
@@ -52,14 +58,43 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
     setImages(newImages);
   };
 
+  const handleAddTimerInput = () => {
+    setTimersInput(currentInputs => [...currentInputs, { minutes: 0, seconds: 0 }]);
+  };
+
+  const handleRemoveTimerInput = (index: number) => {
+    const newTimersInput = [...timersInput];
+    newTimersInput.splice(index, 1);
+    if (newTimersInput.length === 0) {
+      setTimersInput([{ minutes: 0, seconds: 0 }]);
+    } else {
+      setTimersInput(newTimersInput);
+    }
+  };
+
+  const handleUpdateTimerInput = (index: number, field: 'minutes' | 'seconds', value: number) => {
+    const newTimersInput = [...timersInput];
+    newTimersInput[index] = { ...newTimersInput[index], [field]: value };
+    setTimersInput(newTimersInput);
+  };
+
   const handleSave = () => {
-    const totalSeconds = timerService.parseTime(minutes, seconds);
+    const validTimersInput = timersInput.filter(input => typeof input.minutes === 'number' && typeof input.seconds === 'number');
+
+    const updatedTimers: Timer[] = validTimersInput
+      .map(input => timerService.parseTime(input.minutes, input.seconds))
+      .filter(totalSeconds => totalSeconds > 0)
+      .map((totalSeconds) => {
+        const existingTimer = (step.timers || []).find(t => t.duration === totalSeconds);
+        return existingTimer ? { ...existingTimer } : timerService.createTimer(totalSeconds);
+      });
+
     const updatedStep: Step = {
       ...step,
       title,
       instructions: instructions.filter(i => i.trim() !== ''),
       images,
-      timer: totalSeconds > 0 ? timerService.createTimer(totalSeconds) : undefined
+      timers: updatedTimers
     };
     onSave(updatedStep);
   };
@@ -100,30 +135,45 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
       </div>
 
       <div className="form-group">
-        <label>Timer Duration</label>
-        <div className="timer-inputs">
-          <div className="timer-input">
-            <input
-              type="number"
-              value={minutes}
-              onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
-              min="0"
-              placeholder="Minutes"
-            />
-            <span>minutes</span>
+        <label>Timers</label>
+        {timersInput.map((timerInput, index) => (
+          <div key={index} className="timer-input-group">
+            <div className="timer-inputs">
+              <div className="timer-input">
+                <input
+                  type="number"
+                  value={timerInput.minutes}
+                  onChange={(e) => handleUpdateTimerInput(index, 'minutes', Math.max(0, parseInt(e.target.value) || 0))}
+                  min="0"
+                  placeholder="Minutes"
+                />
+                <span>minutes</span>
+              </div>
+              <div className="timer-input">
+                <input
+                  type="number"
+                  value={timerInput.seconds}
+                  onChange={(e) => handleUpdateTimerInput(index, 'seconds', Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                  min="0"
+                  max="59"
+                  placeholder="Seconds"
+                />
+                <span>seconds</span>
+              </div>
+            </div>
+            {timersInput.length > 1 && (
+              <button
+                onClick={() => handleRemoveTimerInput(index)}
+                className="remove-button remove-timer-button"
+              >
+                Remove Timer
+              </button>
+            )}
           </div>
-          <div className="timer-input">
-            <input
-              type="number"
-              value={seconds}
-              onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
-              min="0"
-              max="59"
-              placeholder="Seconds"
-            />
-            <span>seconds</span>
-          </div>
-        </div>
+        ))}
+        <button onClick={handleAddTimerInput} className="add-button add-timer-button">
+          Add Another Timer
+        </button>
       </div>
 
       <div className="form-group">
@@ -160,4 +210,4 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
       </div>
     </div>
   );
-}; 
+};
