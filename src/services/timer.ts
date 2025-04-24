@@ -1,7 +1,8 @@
 import { Timer } from '../types';
 
-const TIMER_SOUND = new Audio('/timer-sound.mp3');
-const activeIntervals: { [key: string]: number } = {};
+// Keep the sound accessible if needed by components, or move it.
+// For this refactor, the component will handle playing the sound.
+export const TIMER_SOUND = new Audio('/timer-sound.mp3');
 
 export const timerService = {
   createTimer: (duration: number): Timer => ({
@@ -12,37 +13,20 @@ export const timerService = {
     remainingTime: duration
   }),
 
-  startTimer: (timer: Timer, onTick: (remainingTime: number) => void, onComplete: () => void): Timer => {
-    const newTimer = { ...timer, isRunning: true, isPaused: false };
-    let remainingTime = timer.remainingTime;
-
-    // Clear any existing interval for this timer
-    if (activeIntervals[timer.id]) {
-      clearInterval(activeIntervals[timer.id]);
-    }
-
-    const tick = () => {
-      if (remainingTime > 0) {
-        remainingTime--;
-        onTick(remainingTime);
-      } else {
-        clearInterval(activeIntervals[timer.id]);
-        delete activeIntervals[timer.id];
-        TIMER_SOUND.play();
-        onComplete();
-      }
+  // Removed onTick and onComplete parameters
+  startTimer: (timer: Timer): Timer => {
+    // Returns the state for a newly started timer (starts from full duration)
+    return {
+      ...timer,
+      isRunning: true,
+      isPaused: false,
+      remainingTime: timer.duration // Start from the beginning
     };
-
-    activeIntervals[timer.id] = setInterval(tick, 1000) as unknown as number;
-
-    return newTimer;
   },
 
   pauseTimer: (timer: Timer): Timer => {
-    if (activeIntervals[timer.id]) {
-      clearInterval(activeIntervals[timer.id]);
-      delete activeIntervals[timer.id];
-    }
+    // Returns the state for a paused timer
+    // Keeps the current remainingTime
     return {
       ...timer,
       isPaused: true,
@@ -50,49 +34,20 @@ export const timerService = {
     };
   },
 
-  resumeTimer: (timer: Timer, onTick: (remainingTime: number) => void, onComplete: () => void): Timer => {
-    const newTimer = { ...timer, isRunning: true, isPaused: false };
-    let remainingTime = timer.remainingTime;
-
-    // Clear any existing interval for this timer
-    if (activeIntervals[timer.id]) {
-      clearInterval(activeIntervals[timer.id]);
-    }
-
-    const tick = () => {
-      if (remainingTime > 0) {
-        remainingTime--;
-        onTick(remainingTime);
-      } else {
-        clearInterval(activeIntervals[timer.id]);
-        delete activeIntervals[timer.id];
-        TIMER_SOUND.play();
-        onComplete();
-      }
-    };
-
-    activeIntervals[timer.id] = setInterval(tick, 1000) as unknown as number;
-
-    return newTimer;
-  },
-
-  stopTimer: (timer: Timer): Timer => {
-    if (activeIntervals[timer.id]) {
-      clearInterval(activeIntervals[timer.id]);
-      delete activeIntervals[timer.id];
-    }
+  // Removed onTick and onComplete parameters
+  resumeTimer: (timer: Timer): Timer => {
+    // Returns the state for a resumed timer
+    // Keeps the current remainingTime
     return {
       ...timer,
-      isRunning: false,
+      isRunning: true,
       isPaused: false
     };
   },
 
+  // Renamed from stopTimer, resets the timer completely
   resetTimer: (timer: Timer): Timer => {
-    if (activeIntervals[timer.id]) {
-      clearInterval(activeIntervals[timer.id]);
-      delete activeIntervals[timer.id];
-    }
+    // Returns the state for a stopped/reset timer
     return {
       ...timer,
       remainingTime: timer.duration,
@@ -117,4 +72,4 @@ export const timerService = {
       seconds: totalSeconds % 60
     };
   }
-}; 
+};
