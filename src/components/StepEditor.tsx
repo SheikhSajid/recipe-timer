@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Step, Timer } from '../types';
+import { Step } from '../types';
 import { timerService } from '../services/timer';
 
 interface StepEditorProps {
@@ -11,9 +11,8 @@ interface StepEditorProps {
 export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }) => {
   const [title, setTitle] = useState(step.title);
   const [instructions, setInstructions] = useState(step.instructions);
-  const [timers, setTimers] = useState<{ minutes: number; seconds: number }[]>(
-    step.timers?.map(timer => timerService.getMinutesAndSeconds(timer.duration)) || []
-  );
+  const [minutes, setMinutes] = useState(Math.floor((step.timer?.duration || 0) / 60));
+  const [seconds, setSeconds] = useState((step.timer?.duration || 0) % 60);
   const [images, setImages] = useState<string[]>(step.images);
 
   const handleAddInstruction = () => {
@@ -30,25 +29,6 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
     const newInstructions = [...instructions];
     newInstructions[index] = value;
     setInstructions(newInstructions);
-  };
-
-  const handleAddTimer = () => {
-    setTimers([...timers, { minutes: 0, seconds: 0 }]);
-  };
-
-  const handleRemoveTimer = (index: number) => {
-    const newTimers = [...timers];
-    newTimers.splice(index, 1);
-    setTimers(newTimers);
-  };
-
-  const handleUpdateTimer = (index: number, field: 'minutes' | 'seconds', value: number) => {
-    const newTimers = [...timers];
-    newTimers[index] = {
-      ...newTimers[index],
-      [field]: field === 'seconds' ? Math.max(0, Math.min(59, value)) : Math.max(0, value)
-    };
-    setTimers(newTimers);
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,19 +53,13 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
   };
 
   const handleSave = () => {
-    const newTimers: Timer[] = timers
-      .map(({ minutes, seconds }) => {
-        const totalSeconds = timerService.parseTime(minutes, seconds);
-        return totalSeconds > 0 ? timerService.createTimer(totalSeconds) : null;
-      })
-      .filter((timer): timer is Timer => timer !== null);
-
+    const totalSeconds = timerService.parseTime(minutes, seconds);
     const updatedStep: Step = {
       ...step,
       title,
       instructions: instructions.filter(i => i.trim() !== ''),
-      timers: newTimers,
-      images
+      images,
+      timer: totalSeconds > 0 ? timerService.createTimer(totalSeconds) : undefined
     };
     onSave(updatedStep);
   };
@@ -126,41 +100,30 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
       </div>
 
       <div className="form-group">
-        <label>Timers</label>
-        {timers.map((timer, index) => (
-          <div key={index} className="timer-inputs">
-            <div className="timer-input">
-              <input
-                type="number"
-                value={timer.minutes}
-                onChange={(e) => handleUpdateTimer(index, 'minutes', parseInt(e.target.value) || 0)}
-                min="0"
-                placeholder="Minutes"
-              />
-              <span>minutes</span>
-            </div>
-            <div className="timer-input">
-              <input
-                type="number"
-                value={timer.seconds}
-                onChange={(e) => handleUpdateTimer(index, 'seconds', parseInt(e.target.value) || 0)}
-                min="0"
-                max="59"
-                placeholder="Seconds"
-              />
-              <span>seconds</span>
-            </div>
-            <button
-              onClick={() => handleRemoveTimer(index)}
-              className="remove-button"
-            >
-              Remove Timer
-            </button>
+        <label>Timer Duration</label>
+        <div className="timer-inputs">
+          <div className="timer-input">
+            <input
+              type="number"
+              value={minutes}
+              onChange={(e) => setMinutes(Math.max(0, parseInt(e.target.value) || 0))}
+              min="0"
+              placeholder="Minutes"
+            />
+            <span>minutes</span>
           </div>
-        ))}
-        <button onClick={handleAddTimer} className="add-button">
-          Add Timer
-        </button>
+          <div className="timer-input">
+            <input
+              type="number"
+              value={seconds}
+              onChange={(e) => setSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+              min="0"
+              max="59"
+              placeholder="Seconds"
+            />
+            <span>seconds</span>
+          </div>
+        </div>
       </div>
 
       <div className="form-group">
