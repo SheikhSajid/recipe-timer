@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Recipe as RecipeType, Step } from '../types';
+import { Recipe as RecipeType, Step } from '../types/index';
 import { Step as StepComponent } from './Step';
 import { AddStepForm } from './AddStepForm';
 import { storageService } from '../services/storage';

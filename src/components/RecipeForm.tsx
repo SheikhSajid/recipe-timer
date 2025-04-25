@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Recipe, Step } from '../types';
+import { Recipe, Step } from '../types/index';
 import { storageService } from '../services/storage';
 import { timerService } from '../services/timer';
 

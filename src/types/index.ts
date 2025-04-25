@@ -1,4 +1,5 @@
 export interface Timer {
+  name: string;
   id: string;
   duration: number; // in seconds
   isRunning: boolean;

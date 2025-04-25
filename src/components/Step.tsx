@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Step as StepType, Timer } from '../types';
+import { Step as StepType, Timer } from '../types/index';
 import { Timer as TimerComponent } from './Timer';
 import { StepEditor } from './StepEditor';
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Step, Timer } from '../types';
+import { Step, Timer } from '../types/index';
 import { timerService } from '../services/timer';
 import './AddStepForm.css';
 

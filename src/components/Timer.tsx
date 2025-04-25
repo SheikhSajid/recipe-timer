@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Timer as TimerType } from '../types';
+import { Timer as TimerType } from '../types/index';
 import { timerService, TIMER_SOUND } from '../services/timer';
 
 interface TimerProps {
