@@ -1,6 +1,6 @@
 :root {
   --primary-color: #bbf06a;
-  --secondary-color: #27ae60;
+  --secondary-color: #007838;
   --text-color: #232323;
   --background-color: #faf8f3;
   --card-background: #ffffff;
@@ -400,6 +400,10 @@ button.secondary {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+.step-header > h3 {
+  color: var(--secondary-color);
 }
 
 .edit-button {
