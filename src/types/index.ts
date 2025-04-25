@@ -1,10 +1,10 @@
 export interface Timer {
-  name: string;
   id: string;
-  duration: number; // in seconds
+  name: string; // Added timer name
+  duration: number; // Total duration in seconds
+  remainingTime: number; // Remaining time in seconds
   isRunning: boolean;
   isPaused: boolean;
-  remainingTime: number;
 }
 
 export interface Step {
@@ -12,7 +12,7 @@ export interface Step {
   recipeId: string;
   title: string;
   instructions: string[];
-  timer?: Timer;
+  timers?: Timer[];
   images: string[]; // Base64 encoded image data
   order: number;
 }

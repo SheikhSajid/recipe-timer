@@ -1,4 +1,4 @@
-import { User, Recipe } from '../types';
+import { User, Recipe } from '../types/index';
 
 const STORAGE_KEY = 'recipe_timer_app';
 

@@ -12,7 +12,7 @@ export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleTimerUpdate = (updatedTimer: Timer) => {
-    const updatedTimers = step.timers.map(timer =>
+    const updatedTimers = step.timers?.map(timer =>
       timer.id === updatedTimer.id ? updatedTimer : timer
     );
     const updatedStep = { ...step, timers: updatedTimers };

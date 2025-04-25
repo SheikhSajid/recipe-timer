@@ -29,7 +29,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onRecipeAdded }) => {
       instructions: currentStep.instructions.filter(i => i.trim() !== ''),
       order: steps.length + 1,
       images: currentStep.images.filter(i => i.trim() !== ''),
-      timer: currentStep.timerDuration > 0 ? timerService.createTimer(currentStep.timerDuration) : undefined
+      timers: currentStep.timerDuration > 0 ? [timerService.createTimer(currentStep.timerDuration)] : undefined
     };
 
     setSteps([...steps, newStep]);
@@ -97,7 +97,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ onRecipeAdded }) => {
           <div key={step.id} className="step-preview">
             <h4>{step.title}</h4>
             <p>{step.instructions.join(', ')}</p>
-            {step.timer && <p>Timer: {timerService.formatTime(step.timer.duration)}</p>}
+            {step.timers && <p>Timer: {timerService.formatTime(step.timers[0].duration)}</p>}
           </div>
         ))}
 
