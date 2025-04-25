@@ -5,8 +5,9 @@ import { Timer } from '../types';
 export const TIMER_SOUND = new Audio('/timer-sound.mp3');
 
 export const timerService = {
-  createTimer: (duration: number): Timer => ({
+  createTimer: (duration: number, name: string = 'Timer'): Timer => ({ // Added name parameter
     id: crypto.randomUUID(),
+    name, // Assign name
     duration,
     isRunning: false,
     isPaused: false,

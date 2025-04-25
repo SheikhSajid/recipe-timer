@@ -3,7 +3,7 @@ import { Timer as TimerType } from '../types';
 import { timerService, TIMER_SOUND } from '../services/timer';
 
 interface TimerProps {
-  timer: TimerType;
+  timer: TimerType; // TimerType now includes 'name'
   onTimerUpdate: (timer: TimerType) => void;
 }
 
@@ -91,6 +91,8 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
 
   return (
     <div className={`timer ${isCompleted ? 'completed' : ''}`}>
+      {/* Add timer name display */}
+      <div className="timer-name">{timer.name || 'Timer'}</div>
       <div className="timer-display">{timerService.formatTime(remainingTime)}</div>
       <div className="timer-controls">
         {!timer.isRunning && !timer.isPaused ? (
