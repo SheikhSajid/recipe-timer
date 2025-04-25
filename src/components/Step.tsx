@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Step as StepType, Timer } from '../types/index';
 import { Timer as TimerComponent } from './Timer';
 import { StepEditor } from './StepEditor';
@@ -6,10 +6,18 @@ import { StepEditor } from './StepEditor';
 interface StepProps {
   step: StepType;
   onStepUpdate: (step: StepType) => void;
+  resetTrigger?: number;
 }
 
-export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
+export const Step: React.FC<StepProps> = ({ step, onStepUpdate, resetTrigger }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [checkedInstructions, setCheckedInstructions] = useState<boolean[]>(
+    step.instructions.map(() => false)
+  );
+
+  useEffect(() => {
+    setCheckedInstructions(step.instructions.map(() => false));
+  }, [resetTrigger, step.instructions.length]);
 
   const handleTimerUpdate = (updatedTimer: Timer) => {
     const updatedTimers = step.timers?.map(timer =>
@@ -32,6 +40,14 @@ export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
     setIsEditing(false);
   };
 
+  const handleCheckboxChange = (index: number) => {
+    setCheckedInstructions((prev) => {
+      const updated = [...prev];
+      updated[index] = !updated[index];
+      return updated;
+    });
+  };
+
   if (isEditing) {
     return <StepEditor step={step} onSave={handleSave} onCancel={handleCancel} />;
   }
@@ -45,11 +61,21 @@ export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
         </button>
       </div>
       <div className="step-content">
-        <ol className="step-instructions">
+        <ul className="step-instructions">
           {step.instructions.map((instruction, index) => (
-            <li key={index}>{instruction}</li>
+            <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                checked={checkedInstructions[index]}
+                onChange={() => handleCheckboxChange(index)}
+                style={{ marginRight: '0.5em' }}
+              />
+              <span style={{ textDecoration: checkedInstructions[index] ? 'line-through' : 'none' }}>
+                {instruction}
+              </span>
+            </li>
           ))}
-        </ol>
+        </ul>
         {step.images.length > 0 && (
           <div className="step-images">
             {step.images.map((imageData, index) => (

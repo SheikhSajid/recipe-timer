@@ -14,6 +14,7 @@ export const Recipe: React.FC<RecipeProps> = ({ recipe, onRecipeUpdate }) => {
   const [showAddStepForm, setShowAddStepForm] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(recipe.title);
+  const [resetStepsTrigger, setResetStepsTrigger] = useState(0);
 
   const handleStepUpdate = (updatedStep: Step) => {
     const updatedSteps = recipe.steps.map(step =>
@@ -74,6 +75,13 @@ export const Recipe: React.FC<RecipeProps> = ({ recipe, onRecipeUpdate }) => {
           <div className="title-display">
             <h2>{recipe.title}</h2>
             <button onClick={handleTitleEdit} className="edit-button primary">Edit Title</button>
+            <button
+              onClick={() => setResetStepsTrigger(t => t + 1)}
+              className="reset-steps-button secondary"
+              style={{ marginLeft: '0.5em' }}
+            >
+              Reset Steps
+            </button>
           </div>
         )}
         <p className="recipe-description">{recipe.description}</p>
@@ -86,6 +94,7 @@ export const Recipe: React.FC<RecipeProps> = ({ recipe, onRecipeUpdate }) => {
               key={step.id}
               step={step}
               onStepUpdate={handleStepUpdate}
+              resetTrigger={resetStepsTrigger}
             />
           ))}
       </div>
