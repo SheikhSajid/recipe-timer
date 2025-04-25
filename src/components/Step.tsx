@@ -3,6 +3,8 @@ import { Step as StepType, Timer } from '../types/index';
 import { Timer as TimerComponent } from './Timer';
 import { StepEditor } from './StepEditor';
 
+import './Step.css';
+
 interface StepProps {
   step: StepType;
   onStepUpdate: (step: StepType) => void;
@@ -66,6 +68,7 @@ export const Step: React.FC<StepProps> = ({ step, onStepUpdate, resetTrigger }) 
             <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
               <input
                 type="checkbox"
+                className="custom-checkbox"
                 checked={checkedInstructions[index]}
                 onChange={() => handleCheckboxChange(index)}
                 style={{ marginRight: '0.5em' }}
