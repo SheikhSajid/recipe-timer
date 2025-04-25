@@ -38,7 +38,6 @@ body {
 .app-header {
   padding: 1rem;
   text-align: center;
-  /* box-shadow: var(--box-shadow); */
   flex-shrink: 0;
 }
 
@@ -53,7 +52,31 @@ body {
 }
 
 .header-content h1 {
+  background-color: var(--primary-color);
   margin: 0;
+  display: flex; /* Use flexbox for alignment */
+  flex-direction: column;
+  align-items: center; /* Vertically center items */
+  justify-content: center; /* Center the spans horizontally */
+  font-weight: bold; /* Make text bold */
+  font-size: 1rem; /* Adjust font size as needed */
+  line-height: 1; /* Ensure consistent line height */
+}
+
+.logo-recipe {
+  color: var(--text-color); /* Dark text color */
+  padding: 0.3rem 0.6rem; /* Adjusted padding */
+  border-radius: var(--border-radius); /* Rounded corners */
+  text-transform: uppercase; /* All caps */
+}
+
+.logo-timer {
+  color: var(--text-color); /* Dark text color */
+  padding: 0.3rem 0.6rem; /* Match padding for similar space */
+  text-transform: uppercase; /* All caps */
+  display: inline-block; /* Ensure block-level properties like padding work predictably */
+  margin-top: -12px;
+  letter-spacing: 0.05rem;
 }
 
 .toggle-sidebar-button {

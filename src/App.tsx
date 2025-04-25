@@ -48,7 +48,10 @@ function App() {
           >
             {isSidebarCollapsed ? '☰' : '✕'}
           </button>
-          <h1>Recipe Timer</h1>
+          <h1>
+            <span className="logo-recipe">Recipe</span>
+            <span className="logo-timer">Timer</span>
+          </h1>
         </div>
       </header>
       <main className="app-content">
