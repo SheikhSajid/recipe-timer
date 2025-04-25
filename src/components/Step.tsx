@@ -40,7 +40,7 @@ export const Step: React.FC<StepProps> = ({ step, onStepUpdate }) => {
     <div className="step">
       <div className="step-header">
         <h3>{step.title}</h3>
-        <button onClick={handleEdit} className="edit-button">
+        <button onClick={handleEdit} className="edit-button primary">
           Edit
         </button>
       </div>

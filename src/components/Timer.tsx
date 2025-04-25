@@ -96,13 +96,13 @@ export const Timer: React.FC<TimerProps> = ({ timer, onTimerUpdate }) => {
       <div className="timer-display">{timerService.formatTime(remainingTime)}</div>
       <div className="timer-controls">
         {!timer.isRunning && !timer.isPaused ? (
-          <button onClick={handleStart} disabled={timer.duration <= 0}>Start</button>
+          <button className="primary" onClick={handleStart} disabled={timer.duration <= 0}>Start</button>
         ) : timer.isPaused ? (
-          <button onClick={handleResume}>Resume</button>
+          <button className="primary" onClick={handleResume}>Resume</button>
         ) : (
-          <button onClick={handlePause}>Pause</button>
+          <button className="primary" onClick={handlePause}>Pause</button>
         )}
-        <button onClick={handleStop} disabled={timer.duration <= 0}>Stop</button>
+        <button className="secondary" onClick={handleStop} disabled={timer.duration <= 0}>Stop</button>
       </div>
     </div>
   );

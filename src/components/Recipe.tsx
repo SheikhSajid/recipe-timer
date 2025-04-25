@@ -73,7 +73,7 @@ export const Recipe: React.FC<RecipeProps> = ({ recipe, onRecipeUpdate }) => {
         ) : (
           <div className="title-display">
             <h2>{recipe.title}</h2>
-            <button onClick={handleTitleEdit} className="edit-button">Edit Title</button>
+            <button onClick={handleTitleEdit} className="edit-button primary">Edit Title</button>
           </div>
         )}
         <p className="recipe-description">{recipe.description}</p>
@@ -99,7 +99,7 @@ export const Recipe: React.FC<RecipeProps> = ({ recipe, onRecipeUpdate }) => {
         />
       ) : (
         <button
-          className="add-step-button"
+          className="add-step-button primary"
           onClick={() => setShowAddStepForm(true)}
         >
           Add New Step

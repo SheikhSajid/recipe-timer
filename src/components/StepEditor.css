@@ -44,7 +44,7 @@
 
 .remove-button {
   background-color: #ff6b6b;
-  color: white;
+
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -58,7 +58,7 @@
 
 .add-button {
   background-color: var(--primary-color);
-  color: white;
+
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -123,7 +123,7 @@
 
 .save-button {
   background-color: var(--primary-color);
-  color: white;
+
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: var(--border-radius);

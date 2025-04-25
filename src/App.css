@@ -1,9 +1,14 @@
 :root {
-  --primary-color: #2ecc71;
+  --primary-color: #bbf06a;
   --secondary-color: #27ae60;
-  --text-color: #2c3e50;
-  --background-color: #f9f9f9;
+  --text-color: #232323;
+  --background-color: #faf8f3;
   --card-background: #ffffff;
+  --primary-button-background: #232323;
+  --primary-button-background-hover: #353535;
+  --primary-button-color: #ffffff;
+  --secondary-button-background: transparent;
+  --secondary-button-color: #232323;
   --border-radius: 8px;
   --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -31,11 +36,9 @@ body {
 }
 
 .app-header {
-  background-color: var(--primary-color);
-  color: white;
   padding: 1rem;
   text-align: center;
-  box-shadow: var(--box-shadow);
+  /* box-shadow: var(--box-shadow); */
   flex-shrink: 0;
 }
 
@@ -57,8 +60,6 @@ body {
   position: absolute;
   left: 1rem;
   background-color: transparent;
-  color: white;
-  border: 2px solid white;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: var(--border-radius);
@@ -147,7 +148,6 @@ body {
 
 .recipe-detail {
   flex: 1;
-  background-color: var(--card-background);
   padding: 2rem;
   overflow-y: auto;
 }
@@ -167,8 +167,9 @@ body {
 .step {
   margin-bottom: 2rem;
   padding: 1rem;
-  background-color: var(--background-color);
+  background-color: var(--card-background);
   border-radius: var(--border-radius);
+  box-shadow: rgba(0, 0, 0, 0.15) 0rem 0.125rem 0.25rem 0rem;
 }
 
 .step-content {
@@ -195,7 +196,7 @@ body {
 
 .timer {
   background-color: var(--primary-color);
-  color: white;
+
   padding: 1rem;
   border-radius: var(--border-radius);
   text-align: center;
@@ -224,21 +225,27 @@ body {
 }
 
 .timer-controls button {
-  background-color: white;
-  color: var(--primary-color);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
   cursor: pointer;
-  font-weight: bold;
   transition: all 0.2s;
   min-width: 80px;
 }
 
-.timer-controls button:hover {
-  background-color: var(--secondary-color);
-  color: white;
-  transform: translateY(-1px);
+button.primary {
+  background-color: var(--primary-button-background);
+  color: var(--primary-button-color);
+}
+
+button.primary:hover {
+  background-color: var(--primary-button-background-hover);
+}
+
+button.secondary {
+  background-color: var(--secondary-button-background);
+  outline: 1px solid var(--secondary-button-color);
+  color: var(--secondary-button-color);
 }
 
 .timer-controls button:active {
@@ -261,7 +268,7 @@ body {
 
 .new-recipe-button {
   background-color: var(--primary-color);
-  color: white;
+
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -335,7 +342,7 @@ body {
 .instruction-input button,
 .image-input button {
   background-color: #ff6b6b;
-  color: white;
+
   border: none;
   padding: 0.25rem 0.5rem;
   border-radius: var(--border-radius);
@@ -344,7 +351,7 @@ body {
 
 .submit-button {
   background-color: var(--primary-color);
-  color: white;
+
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: var(--border-radius);
@@ -370,7 +377,7 @@ body {
 
 .edit-button {
   background-color: var(--primary-color);
-  color: white;
+
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -398,7 +405,7 @@ body {
 
 .save-button {
   background-color: var(--primary-color);
-  color: white;
+
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -414,7 +421,7 @@ body {
 
 .cancel-button {
   background-color: #ff6b6b;
-  color: white;
+
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -430,7 +437,7 @@ body {
 
 .add-button {
   background-color: var(--primary-color);
-  color: white;
+
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -447,7 +454,7 @@ body {
 
 .remove-button {
   background-color: #ff6b6b;
-  color: white;
+
   border: none;
   padding: 0.25rem 0.5rem;
   border-radius: var(--border-radius);
@@ -524,7 +531,7 @@ body {
 
 .title-edit-buttons .save-button {
   background-color: var(--primary-color);
-  color: white;
+
   border: none;
 }
 

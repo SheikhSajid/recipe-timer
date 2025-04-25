@@ -57,7 +57,7 @@ function App() {
             <h2>My Recipes</h2>
             <div className="header-controls">
               <button 
-                className="new-recipe-button"
+                className="new-recipe-button primary"
                 onClick={() => setShowNewRecipeForm(true)}
               >
                 New Recipe
