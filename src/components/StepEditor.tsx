@@ -38,6 +38,20 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
     setInstructions(newInstructions);
   };
 
+  const handleMoveInstructionUp = (index: number) => {
+    if (index <= 0) return;
+    const newInstructions = [...instructions];
+    [newInstructions[index - 1], newInstructions[index]] = [newInstructions[index], newInstructions[index - 1]];
+    setInstructions(newInstructions);
+  };
+
+  const handleMoveInstructionDown = (index: number) => {
+    if (index >= instructions.length - 1) return;
+    const newInstructions = [...instructions];
+    [newInstructions[index], newInstructions[index + 1]] = [newInstructions[index + 1], newInstructions[index]];
+    setInstructions(newInstructions);
+  };
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -139,6 +153,24 @@ export const StepEditor: React.FC<StepEditorProps> = ({ step, onSave, onCancel }
               className="remove-button"
             >
               Remove
+            </button>
+            <button
+              onClick={() => handleMoveInstructionUp(index)}
+              className="move-button"
+              disabled={index === 0}
+              title="Move Up"
+              style={{ marginLeft: 4 }}
+            >
+              ↑
+            </button>
+            <button
+              onClick={() => handleMoveInstructionDown(index)}
+              className="move-button"
+              disabled={index === instructions.length - 1}
+              title="Move Down"
+              style={{ marginLeft: 2 }}
+            >
+              ↓
             </button>
           </div>
         ))}
