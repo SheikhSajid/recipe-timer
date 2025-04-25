@@ -1,6 +1,9 @@
-# Recipe Timer App
+# Vibe Coded Recipe Timer App
 
 A React application for managing recipes with timers for each step.
+
+99% of the business logic is written by AI using Cursor, GitHub Copilot, and Windsurf.
+Some of the CSS is handwritten.
 
 ## Features
 
@@ -19,11 +22,9 @@ npm install
 # Start development server
 npm run dev
 
-# Build for production
-npm run build
+# Dploy to GitHub Pages
+npm run deploy
 
-# Preview production build
-npm run preview
 ```
 
 ## Deployment to GitHub Pages
